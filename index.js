@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./db");
 const cors = require("cors");
+const userRouter = require("./routes/user");
 
 // Load environment variables
 dotenv.config();
@@ -16,6 +17,9 @@ connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({ origin: true, credentials: true }));
+
+// Routes
+app.use("/user", userRouter);
 
 // PORT definition
 const PORT = process.env.PORT || 3000;
