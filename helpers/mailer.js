@@ -10,8 +10,8 @@ const sendEmail = async ({ email, emailType, userId, username }) => {
     // Update user document based on email type
     if (emailType === "VERIFY") {
       await User.findByIdAndUpdate(userId, {
-        verifyToken: hashedToken,
-        verifyTokenExpiry: Date.now() + 24 * 60 * 60 * 1000, // Valid for 24 hrs only
+        verificationToken: hashedToken,
+        verificationTokenExpiry: Date.now() + 24 * 60 * 60 * 1000, // Valid for 24 hrs only
       });
     } else if (emailType === "RESET") {
       await User.findByIdAndUpdate(userId, {
