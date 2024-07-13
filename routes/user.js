@@ -1,8 +1,18 @@
 const express = require("express");
-const userControllers = require("../controllers/user");
+const userController = require("../controllers/user");
 const userRouter = express.Router();
 
-userRouter.post("/signup", userControllers.handleSignUp);
-userRouter.post("/login", userControllers.handleLogin);
+// Authentication routes
+userRouter.post("/signup", userController.handleUserSignUp);
+userRouter.post("/login", userController.handleUserLogin);
+userRouter.post("/logout", userController.handleUserLogout);
+
+// User operations routes
+userRouter.get("/", userController.handleGetUserDetails);
+userRouter.post("/verify-email", userController.handleUserEmailVerification);
+
+// Password management routes
+userRouter.post("/request-password-reset", userController.handleRequestPasswordReset);
+userRouter.post("/change-password", userController.handleChangePassword);
 
 module.exports = userRouter;
