@@ -4,6 +4,7 @@ const connectDB = require("./db");
 const cors = require("cors");
 const userRouter = require("./routes/user");
 const urlRouter = require("./routes/url");
+const redirectRouter = require("./routes/redirect");
 const { userAuth } = require("./middlewares/auth");
 
 // Load environment variables
@@ -23,6 +24,7 @@ app.use(cors({ origin: true, credentials: true }));
 // Routes
 app.use("/user", userRouter);
 app.use("/url", userAuth, urlRouter);
+app.use("/", redirectRouter);
 
 // PORT definition
 const PORT = process.env.PORT || 3000;

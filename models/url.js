@@ -15,6 +15,18 @@ const urlSchmea = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    desktopClicks: {
+      type: Number,
+      default: 0,
+    },
+    mobileClicks: {
+      type: Number,
+      default: 0,
+    },
+    tabletClicks: {
+      type: Number,
+      default: 0,
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
