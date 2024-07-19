@@ -10,6 +10,7 @@ userRouter.post("/logout", userController.handleUserLogout);
 // User operations routes
 userRouter.get("/", userController.handleGetUserDetails);
 userRouter.post("/verify-email", userController.handleUserEmailVerification);
+userRouter.delete("/", userController.handleAccountDeletion);
 
 // Password management routes
 userRouter.post("/request-password-reset", userController.handleRequestPasswordReset);

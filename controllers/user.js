@@ -191,6 +191,60 @@ async function handleUserEmailVerification(req, res) {
   }
 }
 
+// Handle user account deletion
+async function handleAccountDeletion(req, res) {
+  try {
+    const secretKey = process.env.JWT_SECRET_KEY;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ error: "Required fields missing" });
+    }
+
+    // Check if cookie exists
+    const cookie = req.headers.cookie;
+    if (!cookie) {
+      return res.status(400).json({ error: "Authentication required" });
+    }
+    const token = cookie.split("=")[1];
+
+    // Verify the JWT token
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(token, secretKey);
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    // Fetch user details from database
+    const userId = decodedToken.id;
+    const user = await User.findById(userId);
+
+    // Check if user exists
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    // Validate password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ error: "Wrong password" });
+    }
+
+    // Delete the user from the database
+    await User.findByIdAndDelete(userId);
+
+    // Clear authentication cookie
+    res.cookie("auth", "", {
+      maxAge: new Date(0),
+    });
+    return res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    console.error("Error in Account deletion:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 // Handle password reset request
 async function handleRequestPasswordReset(req, res) {
   try {
@@ -268,6 +322,7 @@ module.exports = {
   // User operations
   handleGetUserDetails,
   handleUserEmailVerification,
+  handleAccountDeletion,
 
   // Password management
   handleRequestPasswordReset,
