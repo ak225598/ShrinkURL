@@ -22,7 +22,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    lastLogin: Date,
+    lastLogin: {
+      type: Date,
+      default: Date.now(),
+    },
+    currentLogin: {
+      type: Date,
+      default: Date.now(),
+    },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verificationToken: String,

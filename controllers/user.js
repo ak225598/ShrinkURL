@@ -77,6 +77,8 @@ async function handleUserLogin(req, res) {
       return res.status(400).json({ error: "Wrong password" });
     }
 
+    await User.findByIdAndUpdate(user.id, { currentLogin: Date.now() });
+
     // Generate a jwt token
     const secretkey = process.env.JWT_SECRET_KEY;
     const tokenData = {
@@ -105,6 +107,32 @@ async function handleUserLogin(req, res) {
 // Handle user logout
 async function handleUserLogout(req, res) {
   try {
+    const secretKey = process.env.JWT_SECRET_KEY;
+
+    // Check if cookie exists
+    const cookie = req.headers.cookie;
+    if (!cookie) {
+      return res.status(400).json({ error: "Authentication required" });
+    }
+    const token = cookie.split("=")[1];
+
+    // Verify the JWT token
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(token, secretKey);
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid or expired token" });
+    }
+
+    // Fetch user details from database
+    const userId = decodedToken.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    await User.findByIdAndUpdate(userId, { lastLogin: user.currentLogin });
+
     // Clear the authentication cookie
     res.cookie("auth", "", {
       maxAge: new Date(0),
@@ -150,6 +178,7 @@ async function handleGetUserDetails(req, res) {
       name: user.name,
       email: user.email,
       lastLogin: user.lastLogin,
+      currentLogin: user.currentLogin,
     });
   } catch (error) {
     console.error("Error in handleUserDetails:", error);
